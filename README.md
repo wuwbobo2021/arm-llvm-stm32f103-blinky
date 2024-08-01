@@ -8,6 +8,8 @@ Startup program file and linker script for STM32F1xx: <https://github.com/STMicr
 
 In the linker script file, mark section `._user_heap_stack` (and probably `.bss`) with `(NOLOAD)` to solve the 384 MiB (0x20000000 - 0x08000000) bin file problem.
 
+Try change the flag `-O3` to `-O1` in `Makefile` if strange problem occurred after the migration, because optimization in LLVM is more aggressive.
+
 ## Flashing
 ```
 make flash ARM_LIB_DIR=<toolchain>/lib/clang-runtimes/arm-none-eabi/armv7a_soft_nofp/lib
