@@ -73,13 +73,14 @@ $(TARGET).elf: $(OBJS)
 %.o: %.s
 	$(AS) -c $(FLAGS) $< -o $@
 
-.PHONY: clean flash
+.PHONY: clean flash debug
 
 clean:
 	$(RM) $(foreach d, $(C_DIRS), $(d)/*.o) *.elf *.bin
 
 flash: $(TARGET).bin
-	openocd \
-	-f /usr/share/openocd/scripts/interface/stlink.cfg \
-	-f /usr/share/openocd/scripts/target/stm32f1x.cfg \
-	-c "program $(TARGET).bin preverify verify reset exit 0x8000000"
+	$(OPENOCD) -c "program $(TARGET).bin preverify verify reset exit 0x08000000"
+
+debug: $(TARGET).elf
+	$(GDB) -iex "target extended | $(OPENOCD) -c 'gdb_port pipe'" \
+	-iex 'monitor reset halt' -ex 'break main' -ex 'c' -ex '-' $<

@@ -16,10 +16,16 @@ make flash ARM_LIB_DIR=<toolchain>/lib/clang-runtimes/arm-none-eabi/armv7a_soft_
 ```
 
 ## Debugging
+If `make` has been executed without `DEBUG=1`, do `make clean`.
+```
+make flash DEBUG=1 ARM_LIB_DIR=<toolchain>/lib/clang-runtimes/arm-none-eabi/armv7a_soft_nofp/lib
+make debug
+```
+
+Or do it manually:
 ```
 make flash DEBUG=1 ARM_LIB_DIR=<toolchain>/lib/clang-runtimes/arm-none-eabi/armv7a_soft_nofp/lib
 openocd -f /usr/share/openocd/scripts/interface/stlink.cfg -f /usr/share/openocd/scripts/target/stm32f1x.cfg
 
-gdb-multiarch arm-llvm-stm32f103-blinky.elf
-target remote localhost:3333
+gdb-multiarch arm-llvm-stm32f103-blinky.elf -iex 'target remote localhost:3333' -iex 'monitor reset halt' -ex 'break main' -ex 'c'
 ```
