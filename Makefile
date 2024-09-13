@@ -6,7 +6,7 @@ DEBUG = 0
 # optimization
 OPT = -O3 -flto
 
-ASM_SOURCES = stm32f10x/startup_stm32f10x_md.s
+ASM_SOURCES = stm32f10x/startup_stm32f103xb.s
 LD_SCRIPT = stm32f103c8tx_flash.ld
 
 C_DIRS = arm \
@@ -18,7 +18,7 @@ C_DEFS = -DUSE_STDPERIPH_DRIVER \
 
 
 # it must be set for libc and libm, like
-# <LLVM Embedded Toolchain for Arm>/lib/clang-runtimes/arm-none-eabi/armv7a_soft_nofp/lib
+# <LLVM Embedded Toolchain for Arm>/lib/clang-runtimes/arm-none-eabi/armv7m_soft_nofp
 ARM_LIB_DIR =
 
 # leave empty if the original llvm/clang should be used
@@ -45,12 +45,12 @@ endif
 
 FLAGS = -mthumb -mcpu=cortex-m3 --target=thumbv7m-none-unknown-eabi -mfpu=none
 
-C_INCLUDES = $(foreach d, $(C_DIRS), -I$(d))
+C_INCLUDES = $(foreach d, $(C_DIRS), -I$(d)) -I$(ARM_LIB_DIR)/include
 C_SOURCES = $(foreach d, $(C_DIRS), $(foreach c, $(wildcard $(d)/*.c), $(c)))
 CFLAGS = $(C_DEFS) $(C_INCLUDES) $(FLAGS) -std=c99 -fdata-sections -ffunction-sections
 
 OBJS = $(C_SOURCES:.c=.o) $(ASM_SOURCES:.s=.o)
-LD_FLAGS = $(FLAGS) -Wl,--gc-sections -T$(LD_SCRIPT) -nostdlib -lc -lm -L $(ARM_LIB_DIR)
+LD_FLAGS = $(FLAGS) -Wl,--gc-sections -T$(LD_SCRIPT) -nostdlib -lc -lm -L $(ARM_LIB_DIR)/lib
 
 ifeq ($(DEBUG), 1)
 C_DEFS += -DDEBUG
